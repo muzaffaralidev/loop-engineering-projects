@@ -6,14 +6,11 @@
 - `README.md` at the root is the index: each project gets a row in the Projects table (#, name, concept, status emoji). Update it when adding/completing a project.
 - Plain Python 3 only. No manifests, test suite, lint/typecheck config, codegen, or CI anywhere — do not invent any.
 
-## Nested git repo gotcha (important)
+## Git workflow
 
-- `project-01-watch-loop/` has its **own `.git`**. The parent repo tracks it as a gitlink (mode 160000), so:
-  - Commits/pushes made from the parent repo do **not** include any files inside that folder.
-  - The parent's `git status` reads clean even when files inside change.
-  - To track a project's files in the parent, its inner `.git` must be removed first (`git rm --cached <folder>`, delete `<folder>/.git`, then re-add) or converted to a proper submodule.
-- Both the parent repo and the nested repo have `origin` pointing at the **same** GitHub repo (`muzaffaralidev/loop-engineering-projects`). Pushing from either overwrites the other's view.
-- The two histories are unrelated: parent `main` = `0d3ba84` ("add readme"); `origin/main` = `a49470e` (the nested repo's history). A plain push from the parent is rejected; per the owner's workflow the parent (root README) is canonical, so it takes a force push or `--allow-unrelated-histories` merge.
+- The parent repo is canonical: everything (README, AGENTS.md, every `project-NN-name/` folder with all its files) lives in its single history and is pushed from here.
+- Never run `git init` inside a project folder. An embedded `.git` makes the parent track the folder as a gitlink (mode 160000): commits/pushes then silently exclude its files and `git status` reads clean while content changes. This already happened once with `project-01-watch-loop`; if it recurs, fix with `git rm --cached <folder>`, delete `<folder>/.git`, re-add.
+- Daily workflow: add the new `project-NN-name/` folder + update the README table, commit, `git push origin main`.
 
 ## Existing instructions
 
